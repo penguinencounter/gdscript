@@ -92,7 +92,7 @@ STRING_MARKER_REV = [^\"\'\n\r]*
 
 COMMENT = [ \t]*"#"[^\r\n]*(\n|\r|\r\n)?
 ANNOTATOR = "@"[a-zA-Z_]*
-NODE_PATH_LEX = ("$"[a-zA-Z0-9_/]*)|("$"\"\%[a-zA-Z0-9_\./]*\")
+NODE_PATH_LEX = ("$"[a-zA-Z0-9_/]*) | ("$"\"[a-zA-Z0-9_/\.]*\") | (\%[a-zA-Z0-9_\./]*)
 
 ASSIGN = "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|="
 TEST_OPERATOR = "<" | ">" | "==" | "!=" | ">=" | "<="
@@ -244,6 +244,8 @@ ANY = .+
     "vararg"       { return dedentRoot(GdTypes.VARARG); }
 //    "puppet"       { return dedentRoot(GdTypes.PUPPET); }
 //    "master"       { return dedentRoot(GdTypes.MASTER); }
+    "class"        { yybegin(AWAIT_NEW_LINE); return dedentRoot(GdTypes.CLASS); }
+    "super"        { return dedentRoot(GdTypes.SUPER); }
 
     "*"            { return dedentRoot(GdTypes.MUL); }
     "/"            { return dedentRoot(GdTypes.DIV); }
@@ -282,8 +284,8 @@ ANY = .+
     ".."           { return dedentRoot(GdTypes.DOTDOT); }
 
     {NODE_PATH_LEX} { return dedentRoot(GdTypes.NODE_PATH_LEX); }
-    {STRING}        { return GdTypes.STRING; }
-    {STRING_CHAR}   { return GdTypes.STRING; }
+    {STRING}        { return dedentRoot(GdTypes.STRING); }
+    {STRING_CHAR}   { return dedentRoot(GdTypes.STRING); }
     {STRING_MULTILINE} { return GdTypes.STRING; }
 //    {STRING_MARKER} { oppening = yytext().toString(); lastState = yystate(); yybegin(STRING); }
     {ASSIGN}        { return GdTypes.ASSIGN; }
@@ -350,8 +352,6 @@ ANY = .+
     }
 }
 
-//    "class" { return GdTypes.CLASS; }
-//
 
 //
 //    /* Syntax */

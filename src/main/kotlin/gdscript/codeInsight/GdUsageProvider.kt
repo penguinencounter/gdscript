@@ -21,13 +21,14 @@ class GdUsageProvider : FindUsagesProvider {
     }
 
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean {
-        return psiElement is GdClassNameNm
+        return psiElement is GdClassNameNmi
                 || psiElement is GdMethodIdNmi
                 || psiElement is GdClassVarIdNmi
                 || psiElement is GdConstIdNmi
                 || psiElement is GdEnumDeclNmi
                 || psiElement is GdEnumValueNmi
                 || psiElement is GdSignalIdNmi
+                || psiElement is GdVarNmi
     }
 
     override fun getHelpId(psiElement: PsiElement): String? {
@@ -36,13 +37,14 @@ class GdUsageProvider : FindUsagesProvider {
 
     override fun getType(element: PsiElement): String {
         return when(element) {
-            is GdClassNameNm -> "class"
-            is GdMethodIdNmi -> "method"
-            is GdClassVarIdNmi -> "variable"
-            is GdConstIdNmi -> "constant"
-            is GdEnumDeclNmi -> "enum"
-            is GdEnumValueNmi -> "enum const"
-            is GdSignalIdNmi -> "signal"
+            is GdClassNameNmi -> "classes"
+            is GdMethodIdNmi -> "methods"
+            is GdClassVarIdNmi -> "variables"
+            is GdConstIdNmi -> "constants"
+            is GdEnumDeclNmi -> "enums"
+            is GdEnumValueNmi -> "enum consts"
+            is GdSignalIdNmi -> "signals"
+            is GdVarNmi -> "variables"
             else -> ""
         }
     }

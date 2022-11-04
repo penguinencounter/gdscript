@@ -1,5 +1,6 @@
 package gdscript.completion
 
+import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.codeInsight.lookup.LookupElement
 import gdscript.competion.utils.GdLookupElementBuilder
@@ -7,11 +8,16 @@ import gdscript.competion.utils.GdLookupInsertHandler
 import java.awt.Color
 import javax.swing.Icon
 
+/**
+ * Lookup Element factory
+ */
 object GdLookup {
 
     const val KEYWORDS = 90.0;
     const val PRIORITY_KEYWORDS = 95.0;
+    const val BUILT_IN = 100.0;
     const val USER_DEFINED = 200.0;
+    const val REMOTE_DEFINED = 220.0; // resources
     const val LOCAL_USER_DEFINED = 250.0;
     const val TOP = 500.0;
 
@@ -27,7 +33,8 @@ object GdLookup {
         icon: Icon? = null,
         color: Color? = null,
         presentable: String? = null,
-        tail: String? = null
+        tail: String? = null,
+        handler: InsertHandler<LookupElement>? = null,
     ): LookupElement {
         var builder = GdLookupElementBuilder
             .create(text, if (lookup !== null) lookup else text)
@@ -39,8 +46,8 @@ object GdLookup {
             builder = builder.withPresentableText(presentable);
         }
 
-        if (lookup !== null) {
-            builder = builder.withInsertHandler(GdLookupInsertHandler.INSTANCE);
+        if (handler !== null || lookup != null) {
+            builder = builder.withInsertHandler(handler ?: GdLookupInsertHandler.INSTANCE);
         }
 
         if (color !== null) {
@@ -48,12 +55,12 @@ object GdLookup {
         }
 
         if (priority === null) {
-            return builder
+            return builder;
         }
 
         return PrioritizedLookupElement.withPriority(
             builder,
-            priority
+            priority,
         );
     }
 

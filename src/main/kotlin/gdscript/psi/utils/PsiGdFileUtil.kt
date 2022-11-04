@@ -15,16 +15,6 @@ import java.io.File
 
 object PsiGdFileUtil {
 
-    fun listMembers(gdFile: PsiFile): List<PsiElement> {
-        return PsiTreeUtil.getChildrenOfAnyType(
-            gdFile,
-            GdClassVarDeclTl::class.java,
-            GdConstDeclTl::class.java,
-            GdEnumDeclTl::class.java,
-            GdMethodDeclTl::class.java,
-        );
-    }
-
     fun gdFiles(project: Project): Collection<GdFile> {
         val virtualFiles = FileTypeIndex.getFiles(GdFileType, GlobalSearchScope.allScope(project));
 
@@ -39,6 +29,7 @@ object PsiGdFileUtil {
         return name.substring(0, name.length - 3);
     }
 
+    @Deprecated("resource util?")
     fun filepath(element: PsiElement): String {
         val basePath = element.project.basePath ?: return "";
         val file = element.containingFile.originalFile;

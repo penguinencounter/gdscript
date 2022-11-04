@@ -2,6 +2,7 @@ package gdscript.completion.utils
 
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.patterns.PlatformPatterns.psiElement
+import gdscript.psi.GdFile
 import gdscript.psi.GdTypes
 
 object GdRefIdCompletionUtil {
@@ -11,9 +12,11 @@ object GdRefIdCompletionUtil {
         psiElement(GdTypes.CALL_EX),
     ));
 
-    val PARENT_ST_REF = psiElement()
-        .withSuperParent(2, psiElement(GdTypes.PARENT_ST));
+    val CLASS_ROOT = psiElement().withSuperParent(2, PlatformPatterns.or(
+        psiElement(GdTypes.CLASS),
+        psiElement(GdFile::class.java),
+    ));
 
-    val DIRECT_REF = psiElement(GdTypes.REF_ID_NM).andNot(REMOTE_REF);
+    val DIRECT_REF = psiElement().withParent(psiElement(GdTypes.REF_ID_NM).andNot(REMOTE_REF));
 
 }

@@ -23,20 +23,9 @@ object PsiGdEnumUtil {
         return params;
     }
 
-    fun name(enum: GdEnumDeclTl): String? {
-        val stub = enum.stub
-        if (stub != null) {
-            return stub.name();
-        }
-
-        return enum.enumDeclNmi?.name;
-    }
-
     fun values(enum: GdEnumDeclTl): HashMap<String, Int> {
         val stub = enum.stub
-        if (stub != null) {
-            return stub.values();
-        }
+        if (stub != null) return stub.values();
 
         val values = HashMap<String, Int>();
         var i = 1;

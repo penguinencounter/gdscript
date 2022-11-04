@@ -8,73 +8,30 @@ import com.intellij.psi.PsiElement
 import gdscript.action.quickFix.GdAddReturnType
 import gdscript.action.quickFix.GdRemoveElementAction
 import gdscript.psi.*
-import gdscript.psi.utils.PsiGdNamedUtil
+import gdscript.psi.utils.GdClassMemberUtil
 
+/**
+ * Checks for uniqueness of variables
+ * Adds quickfix for return types
+ */
 class GdConstVarIdAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         if (element is GdConstIdNmi || element is GdClassVarIdNmi) {
-            if (!isLocallyUnique(element as GdNamedIdElement, holder)) {
-                return;
-            }
-
-            isParentallyUnique(element, holder);
+            isUnique(element as GdNamedIdElement, holder);
         } else {
             hasReturnType(element, holder);
         }
     }
 
-    private fun isLocallyUnique(element: GdNamedIdElement, holder: AnnotationHolder): Boolean {
-        val thisName = element.name;
-        val constDecl = element.parent;
-        var checkName: String?;
-
-        // TODO tady chybí enum check -> chtělo by to rozšířit an ten parentaly... :/
-        var previous = constDecl.prevSibling;
-        while (previous !== null) {
-            if (previous is GdConstDeclTl) {
-                checkName = previous.constName;
-            } else if (previous is GdClassVarDeclTl) {
-                checkName = previous.name;
-            } else if ( // variables cant be above those
-                //previous is GdToolline TODO
-                previous is GdClassNaming
-                || previous is GdInheritance
-            ) {
-                return true;
-            } else {
-                previous = previous.prevSibling;
-                continue;
-            }
-
-            if (checkName == thisName) {
-                holder
-                    .newAnnotation(HighlightSeverity.ERROR,
-                        "Field with name [${element.name}] already defined")
-                    .range(element.textRange)
-                    .create();
-                return false;
-            }
-
-            previous = previous.prevSibling;
-        }
-
-        return true;
-    }
-
-    private fun isParentallyUnique(element: GdNamedIdElement, holder: AnnotationHolder): Boolean {
-        val exists = PsiGdNamedUtil.findInParent(element);
-        if (exists != null) {
+    private fun isUnique(element: GdNamedIdElement, holder: AnnotationHolder) {
+        if (GdClassMemberUtil.findDeclaration(element) != null) {
             holder
                 .newAnnotation(HighlightSeverity.ERROR,
-                    "[${element.name}] is already defined in parent class")
+                    "[${element.name}] is already defined")
                 .range(element.textRange)
                 .create();
-
-            return false;
         }
-
-        return true;
     }
 
     private fun hasReturnType(element: PsiElement, holder: AnnotationHolder) {
@@ -87,7 +44,8 @@ class GdConstVarIdAnnotator : Annotator {
         }
 
         val assigment = returnTypes.first;
-        if (assigment !== null && assigment.text.equals(":=")) { // := assigment does not specify the type
+        // := assigment cannot specify the type
+        if (assigment !== null && assigment.text.equals(":=")) {
             if (returnTypes.second === null) {
                 return;
             }
@@ -100,7 +58,7 @@ class GdConstVarIdAnnotator : Annotator {
             return;
         }
 
-        val returnType = returnTypes.second?.typeHintNmList?.first()?.text;
+        val returnType = returnTypes.second?.typedVal?.returnType;
         val expr = returnTypes.third;
         if (returnType != null || expr == null) {
             return;

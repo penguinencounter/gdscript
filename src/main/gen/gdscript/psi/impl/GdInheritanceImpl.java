@@ -34,8 +34,8 @@ public class GdInheritanceImpl extends GdInheritanceElementImpl implements GdInh
 
   @Override
   @Nullable
-  public GdInheritanceIdNmi getInheritanceIdNmi() {
-    return PsiTreeUtil.getChildOfType(this, GdInheritanceIdNmi.class);
+  public GdInheritanceId getInheritanceId() {
+    return PsiTreeUtil.getChildOfType(this, GdInheritanceId.class);
   }
 
   @Override
@@ -46,8 +46,8 @@ public class GdInheritanceImpl extends GdInheritanceElementImpl implements GdInh
 
   @Override
   @NotNull
-  public String getInheritanceName() {
-    return GdPsiUtils.getInheritanceName(this);
+  public String getInheritancePath() {
+    return GdPsiUtils.getInheritancePath(this);
   }
 
 }

@@ -4,6 +4,8 @@ package gdscript.psi;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
+import gdscript.psi.impl.GdClassDeclElementType;
+import gdscript.psi.impl.GdClassIdElementType;
 import gdscript.psi.impl.GdClassNamingElementType;
 import gdscript.psi.impl.GdClassVarDeclElementType;
 import gdscript.psi.impl.GdConstDeclElementType;
@@ -15,6 +17,7 @@ import gdscript.psi.impl.*;
 
 public interface GdTypes {
 
+  IElementType ANNOTATION_PARAMS = new GdElementType("ANNOTATION_PARAMS");
   IElementType ANNOTATION_TL = new GdElementType("ANNOTATION_TL");
   IElementType ARG_LIST = new GdElementType("ARG_LIST");
   IElementType ARRAY_DECL = new GdElementType("ARRAY_DECL");
@@ -31,7 +34,8 @@ public interface GdTypes {
   IElementType BUILT_IN_TYPE = new GdElementType("BUILT_IN_TYPE");
   IElementType CALL_EX = new GdElementType("CALL_EX");
   IElementType CAST_EX = new GdElementType("CAST_EX");
-  IElementType CLASS_NAME_NM = new GdElementType("CLASS_NAME_NM");
+  IElementType CLASS_DECL_TL = GdClassDeclElementType.getInstance("CLASS_DECL_TL");
+  IElementType CLASS_NAME_NMI = GdClassIdElementType.getInstance("CLASS_NAME_NMI");
   IElementType CLASS_NAMING = GdClassNamingElementType.getInstance("CLASS_NAMING");
   IElementType CLASS_VAR_DECL_TL = GdClassVarDeclElementType.getInstance("CLASS_VAR_DECL_TL");
   IElementType CLASS_VAR_ID_NMI = new GdElementType("CLASS_VAR_ID_NMI");
@@ -57,7 +61,9 @@ public interface GdTypes {
   IElementType GET_METHOD_ID_NM = new GdElementType("GET_METHOD_ID_NM");
   IElementType IF_ST = new GdElementType("IF_ST");
   IElementType INHERITANCE = GdInheritanceElementType.getInstance("INHERITANCE");
-  IElementType INHERITANCE_ID_NMI = new GdElementType("INHERITANCE_ID_NMI");
+  IElementType INHERITANCE_ID = new GdElementType("INHERITANCE_ID");
+  IElementType INHERITANCE_ID_NM = new GdElementType("INHERITANCE_ID_NM");
+  IElementType INHERITANCE_SUB_ID_NM = new GdElementType("INHERITANCE_SUB_ID_NM");
   IElementType IN_EX = new GdElementType("IN_EX");
   IElementType IS_EX = new GdElementType("IS_EX");
   IElementType IS_TYPED = new GdElementType("IS_TYPED");
@@ -74,8 +80,6 @@ public interface GdTypes {
   IElementType NODE_PATH = new GdElementType("NODE_PATH");
   IElementType PARAM = new GdElementType("PARAM");
   IElementType PARAM_LIST = new GdElementType("PARAM_LIST");
-  IElementType PARENT_METHOD_CALL = new GdElementType("PARENT_METHOD_CALL");
-  IElementType PARENT_ST = new GdElementType("PARENT_ST");
   IElementType PATTERN = new GdElementType("PATTERN");
   IElementType PATTERN_LIST = new GdElementType("PATTERN_LIST");
   IElementType PLUS_EX = new GdElementType("PLUS_EX");
@@ -99,6 +103,8 @@ public interface GdTypes {
   IElementType TERNARY_EX = new GdElementType("TERNARY_EX");
   IElementType TOP_LEVEL_DECL = new GdElementType("TOP_LEVEL_DECL");
   IElementType TYPED = new GdElementType("TYPED");
+  IElementType TYPED_VAL = new GdElementType("TYPED_VAL");
+  IElementType TYPED_VAL_ROOT = new GdElementType("TYPED_VAL_ROOT");
   IElementType TYPE_HINT_ARRAY_NM = new GdElementType("TYPE_HINT_ARRAY_NM");
   IElementType TYPE_HINT_NM = new GdElementType("TYPE_HINT_NM");
   IElementType VAR_DECL_ST = new GdElementType("VAR_DECL_ST");
@@ -118,6 +124,7 @@ public interface GdTypes {
   IElementType BREAK = new GdTokenType("BREAK");
   IElementType BREAKPOINT = new GdTokenType("BREAKPOINT");
   IElementType CEQ = new GdTokenType("CEQ");
+  IElementType CLASS = new GdTokenType("CLASS");
   IElementType CLASS_NAME = new GdTokenType("CLASS_NAME");
   IElementType COLON = new GdTokenType("COLON");
   IElementType COMMA = new GdTokenType("COMMA");
@@ -181,6 +188,7 @@ public interface GdTypes {
   IElementType STATIC = new GdTokenType("STATIC");
   IElementType STR = new GdTokenType("STR");
   IElementType STRING = new GdTokenType("STRING");
+  IElementType SUPER = new GdTokenType("SUPER");
   IElementType TAU = new GdTokenType("TAU");
   IElementType TEST_OPERATOR = new GdTokenType("TEST_OPERATOR");
   IElementType TOOL = new GdTokenType("TOOL");
@@ -195,7 +203,10 @@ public interface GdTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-      if (type == ANNOTATION_TL) {
+      if (type == ANNOTATION_PARAMS) {
+        return new GdAnnotationParamsImpl(node);
+      }
+      else if (type == ANNOTATION_TL) {
         return new GdAnnotationTlImpl(node);
       }
       else if (type == ARG_LIST) {
@@ -243,8 +254,11 @@ public interface GdTypes {
       else if (type == CAST_EX) {
         return new GdCastExImpl(node);
       }
-      else if (type == CLASS_NAME_NM) {
-        return new GdClassNameNmImpl(node);
+      else if (type == CLASS_DECL_TL) {
+        return new GdClassDeclTlImpl(node);
+      }
+      else if (type == CLASS_NAME_NMI) {
+        return new GdClassNameNmiImpl(node);
       }
       else if (type == CLASS_NAMING) {
         return new GdClassNamingImpl(node);
@@ -318,8 +332,14 @@ public interface GdTypes {
       else if (type == INHERITANCE) {
         return new GdInheritanceImpl(node);
       }
-      else if (type == INHERITANCE_ID_NMI) {
-        return new GdInheritanceIdNmiImpl(node);
+      else if (type == INHERITANCE_ID) {
+        return new GdInheritanceIdImpl(node);
+      }
+      else if (type == INHERITANCE_ID_NM) {
+        return new GdInheritanceIdNmImpl(node);
+      }
+      else if (type == INHERITANCE_SUB_ID_NM) {
+        return new GdInheritanceSubIdNmImpl(node);
       }
       else if (type == IN_EX) {
         return new GdInExImpl(node);
@@ -368,12 +388,6 @@ public interface GdTypes {
       }
       else if (type == PARAM_LIST) {
         return new GdParamListImpl(node);
-      }
-      else if (type == PARENT_METHOD_CALL) {
-        return new GdParentMethodCallImpl(node);
-      }
-      else if (type == PARENT_ST) {
-        return new GdParentStImpl(node);
       }
       else if (type == PATTERN) {
         return new GdPatternImpl(node);
@@ -440,6 +454,12 @@ public interface GdTypes {
       }
       else if (type == TYPED) {
         return new GdTypedImpl(node);
+      }
+      else if (type == TYPED_VAL) {
+        return new GdTypedValImpl(node);
+      }
+      else if (type == TYPED_VAL_ROOT) {
+        return new GdTypedValRootImpl(node);
       }
       else if (type == TYPE_HINT_ARRAY_NM) {
         return new GdTypeHintArrayNmImpl(node);

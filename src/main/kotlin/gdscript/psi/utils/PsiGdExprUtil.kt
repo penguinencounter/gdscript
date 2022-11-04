@@ -4,13 +4,10 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import gdscript.GdKeywords
 import gdscript.index.impl.GdClassNamingIndex
 import gdscript.psi.*
-import tscn.index.impl.TscnNodeIndex
-import tscn.index.impl.TscnScriptIndex
 
 object PsiGdExprUtil {
 
@@ -53,19 +50,9 @@ object PsiGdExprUtil {
             is GdPrimaryEx -> {
                 when (expr.firstChild) {
                     is GdNodePath -> {
-                        val project = expr.project;
-                        val filename = PsiGdFileUtil.filepath(expr);
-                        val script = TscnScriptIndex.get(filename, project, GlobalSearchScope.allScope(project))
-                            .firstOrNull()
-                            ?: return "";
+                        val node = GdNodeUtil.findNode(expr.firstChild as GdNodePath);
 
-                        val node = TscnNodeIndex.get(
-                            expr.text.removePrefix("$"),
-                            project,
-                            GlobalSearchScope.fileScope(script.containingFile)
-                        ).firstOrNull();
-
-                        return node?.type ?: "";
+                        return node?.element?.type ?: "";
                     }
                     is GdDictDecl -> return "Dictionary";
                     is GdArrayDecl -> {
@@ -115,63 +102,80 @@ object PsiGdExprUtil {
                 } else if (elementType == GdTypes.STRING) {
                     return GdKeywords.STR;
                 } else if (elementType == GdTypes.REF_ID_NM) {
-                    val named: GdNamedElement = expr.refIdNm ?: return "";
-                    var parentFile = expr.containingFile;
                     if (text == GdKeywords.SELF) {
-                        val clName = PsiGdClassUtil.getClassName(expr);
-                        if (clName != null) {
-                            return clName;
-                        }
-                        val inheritance = PsiTreeUtil.getChildOfType(parentFile, GdInheritance::class.java);
-                        if (inheritance != null) {
-                            return inheritance.inheritanceName;
-                        }
-
-                        return GdKeywords.SELF;
+                        // TODO ii
+//                        return text;
+                        // TODO tohle je také na přeparsování
+                        return GdClassUtil.getOwningClassId(expr)
+                    } else if (text == GdKeywords.SUPER) {
+                        // TODO tohle může vrátit zanoření... :/ Losos.InnerClass -> nějak se to musí vyparsovat
+                        // GdClassIdIndex.get()
+                        return GdInheritanceUtil.getExtendedClassId(expr);
                     }
 
-                    when (val parent = expr.parent) {
-                        is GdAttributeEx -> {
-                            if (expr.prevSibling != null) {
-                                val first = parent.exprList.first();
-                                val parReturn = first?.returnType ?: return "";
-                                if (parReturn != GdKeywords.SELF) {
-                                    parentFile = PsiGdInheritanceUtil.getPsiFile(parReturn, expr.project) ?: return "";
-                                }
-                            }
-                        }
-                        is GdCallEx -> {
-                            val prev = parent.parent;
-                            if (prev.text != GdKeywords.SELF
-                                && prev is GdAttributeEx
-                            ) {
-                                if (parent.prevSibling != null) {
-                                    val first = prev.exprList.first();
-                                    val parReturn = first?.returnType ?: return "";
-                                    parentFile = PsiGdInheritanceUtil.getPsiFile(parReturn, expr.project) ?: return "";
-                                }
-                            }
-                        }
-                    }
+
+//                    val declaration = GdClassMemberUtil.findDeclaration(named);
+//                    val parentName = PsiGdInheritanceUtil.getFirstParentName(expr);
+//                    val ppp = declaration?.text;
+//                    var parentFile = expr.containingFile;
+//                    if (text == GdKeywords.SELF) { // TODO ii super
+//                        val clName = PsiGdClassUtil.getClassName(expr);
+//                        if (clName != null) {
+//                            return clName;
+//                        }
+//                        PsiGdInheritanceUtil.getFirstParentName(expr)
+//
+//                        val inheritance = PsiTreeUtil.getChildOfType(parentFile, GdInheritance::class.java);
+//                        if (inheritance != null) {
+//                            return inheritance.inheritancePath; // TODO ii
+//                        }
+//
+//                        return GdKeywords.SELF;
+//                    }
+
+//                    when (val parent = expr.parent) {
+//                        is GdAttributeEx -> {
+//                            if (expr.prevSibling != null) {
+//                                val first = parent.exprList.first();
+//                                val parReturn = first?.returnType ?: return "";
+//                                if (parReturn != GdKeywords.SELF) {
+////                                    parentFile = PsiGdInheritanceUtil.getPsiFile(parReturn, expr.project) ?: return "";
+//                                }
+//                            }
+//                        }
+//                        is GdCallEx -> {
+//                            val prev = parent.parent;
+//                            if (prev.text != GdKeywords.SELF
+//                                && prev is GdAttributeEx
+//                            ) {
+//                                if (parent.prevSibling != null) {
+//                                    val first = prev.exprList.first();
+//                                    val parReturn = first?.returnType ?: return "";
+////                                    parentFile = PsiGdInheritanceUtil.getPsiFile(parReturn, expr.project) ?: return "";
+//                                }
+//                            }
+//                        }
+//                    }
 
                     if (DumbService.isDumb(expr.project)) {
                         return "";
                     }
 
-                    return when (val element = PsiGdNamedUtil.findInParent(named, includingSelf = true, containingFile = parentFile)) {
-                        is GdMethodDeclTl -> element.returnType;
+                    val named: GdNamedElement = expr.refIdNm ?: return "";
+                    return when (val element =
+//                        PsiGdNamedUtil.findInParent(named, includingSelf = true, containingFile = parentFile)) {
+                        GdClassMemberUtil.findDeclaration(named)) {
                         is GdClassVarDeclTl -> element.returnType;
-                        is GdSignalDeclTl -> "Signal";
+                        is GdVarDeclSt -> element.returnType;
                         is GdConstDeclTl -> element.returnType;
-                        is GdVarDeclSt -> {
-                            val sdf = element.returnType;
-                            return sdf;
-                        };
                         is GdConstDeclSt -> element.returnType;
+                        is GdMethodDeclTl -> element.returnType;
+                        is GdSignalDeclTl -> "Signal";
                         is GdEnumDeclTl -> GdKeywords.INT;
                         is GdEnumValue -> GdKeywords.INT;
                         else -> {
-                            return GdClassNamingIndex.getGlobally(text, expr).firstOrNull()?.classname ?: "";
+                            text
+                            // TODO ii return GdClassNamingIndex.getGlobally(text, expr).firstOrNull()?.classname ?: "";
                         }
                     }
                 }
