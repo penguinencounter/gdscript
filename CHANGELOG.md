@@ -2,11 +2,12 @@
 
 Each release is delayed usually for 2 working days as it awaits JetBrain's approval.
 
-### 2.2.6 (23.2.2024)
+### 2.2.6 (26.2.2024)
 
 + Extending sibling class [#227](https://gitlab.com/IceExplosive/gdscript/-/issues/227)
 + Match PackedArray with Array type [#226](https://gitlab.com/IceExplosive/gdscript/-/issues/226)
 + Improve SignalLineMarker logic to include all connections [#211](https://gitlab.com/IceExplosive/gdscript/-/issues/211)
++ Highlighting support .tres files [#228](https://gitlab.com/IceExplosive/gdscript/-/issues/228)
 
 ### 2.2.5 (23.2.2024)
 
