@@ -180,6 +180,7 @@
       <bundleName>messages.gdscript</bundleName>
       <categoryKey>intention.category</categoryKey>
     </intentionAction>
+    <inlineActionHandler implementation="gdscript.refactoring.GdInlineActionHandler" />
 
     <!-- Formatters -->
     <lang.braceMatcher language="GdScript" implementationClass="gdscript.formatter.GdBraceMatcher" />
