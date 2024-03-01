@@ -25,7 +25,7 @@ class GdInlineActionHandler : InlineActionHandler() {
 
         val offset = editor.caretModel.offset
         val targetReference =
-            ReferencesSearch.search(element, FilesScope.fileScope(project, element.containingFile.virtualFile)).find {
+            ReferencesSearch.search(element, FilesScope.fileScope(project, editor.virtualFile)).find {
                 it.element.textRange.contains(offset)
             } ?: return
 
