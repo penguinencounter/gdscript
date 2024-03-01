@@ -36,4 +36,6 @@ class GdProjectState {
     @Tag("notes")
     var notes: String = "INFO,NOTE,NOTICE,TEST,TESTING"
 
+    @Tag("inlineKeepDeclaration") var inlineKeepDeclaration: Boolean = false
+
 }

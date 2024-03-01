@@ -6,13 +6,18 @@ import com.intellij.refactoring.inline.InlineOptionsDialog
 import gdscript.completion.utils.GdMethodCompletionUtil.shortMethodHeader
 import gdscript.psi.GdMethodDeclTl
 import gdscript.psi.GdMethodIdNmi
+import gdscript.settings.GdProjectSettingsState
 
 class GdInlineOptionsDialog : InlineOptionsDialog {
 
     val declaration: GdMethodIdNmi
     val reference: PsiReference?
 
-    constructor(project: Project, declaration: GdMethodIdNmi, reference: PsiReference?) : super(project, false, declaration) {
+    constructor(project: Project, declaration: GdMethodIdNmi, reference: PsiReference?) : super(
+        project,
+        false,
+        declaration
+    ) {
         this.declaration = declaration
         this.reference = reference
         this.myInvokedOnReference = reference != null
@@ -20,7 +25,8 @@ class GdInlineOptionsDialog : InlineOptionsDialog {
     }
 
     override fun doAction() {
-        val asd = 0
+        GdProjectSettingsState.getInstance(project).state.inlineKeepDeclaration = isInlineThisOnly
+        invokeRefactoring(GdInlineMethodProcessor(project))
     }
 
     override fun getNameLabelText(): String {
@@ -40,13 +46,7 @@ class GdInlineOptionsDialog : InlineOptionsDialog {
     }
 
     override fun isInlineThis(): Boolean {
-        return false
-    }
-
-    // TODO settings - uložit výběr, který byl při akci
-
-    override fun isKeepTheDeclarationByDefault(): Boolean {
-        return super.isKeepTheDeclarationByDefault()
+        return GdProjectSettingsState.getInstance(project).state.inlineKeepDeclaration
     }
 
 }
