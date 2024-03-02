@@ -2,7 +2,7 @@ package gdscript.refactoring
 
 import ai.grazie.utils.toDistinctTypedArray
 import com.intellij.lang.Language
-import com.intellij.lang.refactoring.InlineHandler
+import com.intellij.lang.refactoring.InlineHandler.Inliner
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
@@ -15,6 +15,7 @@ import com.intellij.usageView.UsageViewBundle
 import com.intellij.usageView.UsageViewDescriptor
 import com.intellij.util.containers.MultiMap
 import gdscript.GdLanguage
+import gdscript.psi.GdMethodDeclTl
 import gdscript.psi.GdMethodIdNmi
 
 class GdInlineMethodProcessor : BaseRefactoringProcessor {
@@ -23,7 +24,7 @@ class GdInlineMethodProcessor : BaseRefactoringProcessor {
     private val inlineThisOnly: Boolean
     private val reference: PsiReference?
     private val deleteAfter: Boolean
-    private lateinit var inliners: Map<Language, InlineHandler.Inliner>
+    private lateinit var inliners: Map<Language, Inliner>
 
     constructor(
         project: Project,
@@ -64,12 +65,11 @@ class GdInlineMethodProcessor : BaseRefactoringProcessor {
     }
 
     override fun preprocessUsages(refUsages: Ref<Array<UsageInfo>>): Boolean {
-        // TODO inline is empty, required to customize somewhere
         inliners = GenericInlineHandler.initInliners(
             declaration.parent,
             refUsages.get(),
             { inlineThisOnly },
-            MultiMap(),
+            MultiMap.create(),
             GdLanguage,
         )
 

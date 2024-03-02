@@ -181,6 +181,7 @@
       <categoryKey>intention.category</categoryKey>
     </intentionAction>
     <inlineActionHandler implementation="gdscript.refactoring.GdInlineActionHandler" />
+    <refactoring.inlineHandler language="GdScript" implementationClass="gdscript.refactoring.GdInlineHandler" />
 
     <!-- Formatters -->
     <lang.braceMatcher language="GdScript" implementationClass="gdscript.formatter.GdBraceMatcher" />
