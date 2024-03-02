@@ -26,7 +26,15 @@ class GdInlineOptionsDialog : InlineOptionsDialog {
 
     override fun doAction() {
         GdProjectSettingsState.getInstance(project).state.inlineKeepDeclaration = isInlineThisOnly
-        invokeRefactoring(GdInlineMethodProcessor(project))
+        invokeRefactoring(
+            GdInlineMethodProcessor(
+                project,
+                declaration,
+                isInlineThisOnly,
+                reference,
+                !isInlineThisOnly,
+            )
+        )
     }
 
     override fun getNameLabelText(): String {
