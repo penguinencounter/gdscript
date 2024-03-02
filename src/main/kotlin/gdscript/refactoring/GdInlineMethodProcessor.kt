@@ -70,7 +70,6 @@ class GdInlineMethodProcessor : BaseRefactoringProcessor {
             refUsages.get(),
             { inlineThisOnly },
             MultiMap.create(),
-            GdLanguage,
         )
 
         return super.preprocessUsages(refUsages)
@@ -98,7 +97,7 @@ class GdInlineMethodProcessor : BaseRefactoringProcessor {
 
     private fun postActions() {
         if (deleteAfter) {
-            this.declaration.parent.delete()
+//             this.declaration.parent.delete()
         }
     }
 

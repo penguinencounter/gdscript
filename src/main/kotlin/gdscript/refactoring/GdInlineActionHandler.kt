@@ -12,6 +12,14 @@ import gdscript.psi.GdMethodIdNmi
 
 class GdInlineActionHandler : InlineActionHandler() {
 
+    companion object {
+        val NAME = "Inline method"
+    }
+
+    override fun getActionName(element: PsiElement?): String? {
+        return NAME
+    }
+
     override fun isEnabledForLanguage(l: Language?): Boolean {
         return l == GdLanguage
     }

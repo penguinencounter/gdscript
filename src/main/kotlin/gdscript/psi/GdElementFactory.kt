@@ -20,6 +20,12 @@ object GdElementFactory {
         return PsiTreeUtil.findChildOfType(file, GdClassNameNmi::class.java)!!.firstChild
     }
 
+    fun varStmt(project: Project, name: String, expr: GdExpr): GdVarDeclSt {
+        val file = createFile(project, "func a():\n\tvar $name := ${expr.text}\n")
+
+        return PsiTreeUtil.findChildOfType(file, GdVarDeclSt::class.java)!!
+    }
+
     fun enumDeclNmi(project: Project, name: String): PsiElement {
         val file = createFile(project, "extends Node\nenum $name {VALUE = 1}\n")
 

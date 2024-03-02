@@ -53,7 +53,7 @@ object GdKeywords {
     const val INIT_METHOD = "_init";
 
     /** Flow Types */
-    const val FLOW_RETURN = "return";
+    const val FLOW_RETURN = "return"
 
     val LITERALS = arrayOf(TRUE, FALSE, NULL);
     val LITERAL_TYPES = arrayOf(BOOL, BOOL, NULL);

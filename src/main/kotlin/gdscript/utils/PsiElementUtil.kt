@@ -1,5 +1,6 @@
 package gdscript.utils
 
+import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
@@ -11,6 +12,7 @@ import gdscript.psi.GdArgList
 import gdscript.psi.GdCallEx
 import gdscript.psi.GdTypes
 import gdscript.utils.ElementTypeUtil.isSkipable
+import gdscript.utils.PsiElementUtil.getCaretOffsetIfSingle
 import project.psi.model.GdAutoload
 
 object PsiElementUtil {
@@ -36,12 +38,17 @@ object PsiElementUtil {
     }
 
     fun PsiElement.getCaretOffsetIfSingle(): Int? {
-        val editor = PsiEditorUtil.findEditor(this) ?: return null
+        val editor = this.getEditor() ?: return null
         if (editor.caretModel.caretCount != 1) {
             return null
         }
 
         return editor.caretModel.currentCaret.offset
+    }
+
+
+    inline fun PsiElement.getEditor(): Editor? {
+        return PsiEditorUtil.findEditor(this)
     }
 
     fun PsiElement.getCallExpr(): GdCallEx? {
