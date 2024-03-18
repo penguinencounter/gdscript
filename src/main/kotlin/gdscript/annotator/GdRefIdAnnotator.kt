@@ -1,5 +1,6 @@
 package gdscript.annotator
 
+import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
@@ -18,6 +19,7 @@ import gdscript.settings.GdProjectSettingsState
 import gdscript.settings.GdProjectState
 import gdscript.utils.PsiElementUtil.getCallExpr
 import gdscript.utils.PsiFileUtil.isInSdk
+import gdscript.utils.isGodotSupportPluginForRiderInstalled
 
 /**
  * Colors references
@@ -62,7 +64,7 @@ class GdRefIdAnnotator : Annotator {
                         var nextLeaf = element.nextLeaf(true)
                         if (!objectContinuation.contains(nextLeaf.elementType) && psi.childrenOfType<GdMethodDeclTl>().any { it.isConstructor }) {
                             holder
-                                .newAnnotation(HighlightSeverity.ERROR, "Builtin type $txt cannot be assigned to a variable")
+                                .newAnnotationGd(HighlightSeverity.ERROR, "Builtin type $txt cannot be assigned to a variable")
                                 .range(element.textRange)
                                 .create()
                             return
@@ -94,7 +96,7 @@ class GdRefIdAnnotator : Annotator {
                         return@run GdHighlighterColors.METHOD_CALL
 
                     holder
-                        .newAnnotation(GdProjectState.selectedLevel(state), "Reference [${element.text}] not found")
+                        .newAnnotationGd(GdProjectState.selectedLevel(state), "Reference [${element.text}] not found")
                         .range(element.textRange)
                         .create()
                     return

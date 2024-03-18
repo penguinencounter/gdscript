@@ -22,7 +22,7 @@ class GdTypeHintAnnotator : Annotator {
 
         if (invalidType(typeHints.last())) {
             holder
-                .newAnnotation(HighlightSeverity.ERROR, "Invalid type")
+                .newAnnotationGd(HighlightSeverity.ERROR, "Invalid type")
                 .range(element.textRange)
                 .create()
             return

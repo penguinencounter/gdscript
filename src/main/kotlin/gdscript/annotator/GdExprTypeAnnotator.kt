@@ -1,5 +1,6 @@
 package gdscript.annotator
 
+import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
@@ -11,6 +12,7 @@ import gdscript.utils.GdExprUtil.left
 import gdscript.utils.GdExprUtil.right
 import gdscript.utils.GdOperand
 import gdscript.utils.StringUtil.isDynamicType
+import gdscript.utils.isGodotSupportPluginForRiderInstalled
 
 class GdExprTypeAnnotator : Annotator {
 
@@ -96,7 +98,7 @@ class GdExprTypeAnnotator : Annotator {
         if (operator == "=" && GdExprUtil.typeAccepts(right, left, element)) return
 
         holder
-            .newAnnotation(HighlightSeverity.ERROR, "$message $left $operator $right")
+            .newAnnotationGd(HighlightSeverity.ERROR, "$message $left $operator $right")
             .range(element.textRange)
             .create()
     }

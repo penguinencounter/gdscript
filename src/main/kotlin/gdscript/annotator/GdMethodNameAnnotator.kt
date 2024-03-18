@@ -47,7 +47,7 @@ class GdMethodNameAnnotator : Annotator {
             }
 
             holder
-                .newAnnotation(
+                .newAnnotationGd(
                     HighlightSeverity.ERROR,
                     "Name [${element.name}] already defined as $type"
                 )

@@ -25,7 +25,7 @@ class GdSetGetAnnotator : Annotator {
     private fun methodExists(element: GdNamedElement, holder: AnnotationHolder) {
         if (GdMethodDeclIndex.INSTANCE.getInFile(element).isNotEmpty()) return;
         holder
-            .newAnnotation(HighlightSeverity.ERROR, "Method [${element.text}] does not exist")
+            .newAnnotationGd(HighlightSeverity.ERROR, "Method [${element.text}] does not exist")
             .range(element.textRange)
             .withFix(if (element is GdSetMethodIdNm) setMethod(element) else getMethod(element as GdGetMethodIdNm))
             .create()
