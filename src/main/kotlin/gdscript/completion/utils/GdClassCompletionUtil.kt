@@ -6,6 +6,7 @@ import gdscript.GdIcon
 import gdscript.completion.GdLookup
 import gdscript.index.impl.GdClassNamingIndex
 import gdscript.psi.GdClassDeclTl
+import gdscript.psi.utils.GdInheritanceUtil
 
 /**
  * GdClassNaming & GdClassDeclTl look-ups
@@ -15,12 +16,12 @@ object GdClassCompletionUtil {
     fun allRootClasses(project: Project): Array<LookupElement> {
         return GdClassNamingIndex.INSTANCE.getNonEmptyKeys(project).map {
             GdLookup.create(it, priority = GdLookup.USER_DEFINED, icon = GdIcon.getEditorIcon(it))
-        }.toTypedArray();
+        }.toTypedArray()
     }
 
     fun GdClassDeclTl.lookup(): LookupElement {
-        val name = this.name;
-        return GdLookup.create(name, priority = GdLookup.USER_DEFINED, icon = GdIcon.getEditorIcon(name))
+        val name = this.name
+        return GdLookup.create(name, priority = GdLookup.USER_DEFINED, icon = GdIcon.getEditorIcon(name) { GdInheritanceUtil.getExtendedClassId(this) })
     }
 
 }

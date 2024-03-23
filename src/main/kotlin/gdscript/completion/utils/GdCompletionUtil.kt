@@ -4,9 +4,12 @@ import com.intellij.codeInsight.lookup.LookupElement
 import gdscript.GdIcon
 import gdscript.completion.GdLookup
 import gdscript.completion.utils.GdClassCompletionUtil.lookup
+import gdscript.index.impl.GdFileResIndex
 import gdscript.psi.*
+import gdscript.psi.utils.GdInheritanceUtil
 import gdscript.psi.utils.PsiGdExprUtil
 import gdscript.utils.StringUtil.parseFromSquare
+import gdscript.utils.VirtualFileUtil.resourcePath
 import project.psi.model.GdAutoload
 
 @Deprecated("move into assigned methods")
@@ -34,12 +37,19 @@ object GdCompletionUtil {
         }
     }
 
-    fun lookup(className: GdClassNaming): LookupElement =
-        GdLookup.create(
+    fun lookup(className: GdClassNaming): LookupElement {
+        val icon = GdFileResIndex.INSTANCE.getValue(
+            className.containingFile.virtualFile.resourcePath(),
+            className.project,
+        ).let { if (it?.icon?.isNotBlank() == true) it.icon else className.classname }
+
+        return GdLookup.create(
             className.classname,
             priority = GdLookup.USER_DEFINED,
-            icon = GdIcon.getEditorIcon(className.classname),
+            icon = GdIcon.getEditorIcon(icon) { GdInheritanceUtil.getExtendedClassId(className) },
         )
+    }
+
 
     fun lookup(variable: GdClassVarDeclTl): LookupElement =
         GdLookup.create(
@@ -116,7 +126,7 @@ object GdCompletionUtil {
         )
 
     fun lookup(variable: GdVarNmi): LookupElement {
-        var typed: GdTyped? = null;
+        var typed: GdTyped? = null
         val next = variable.nextSibling
         if (next is GdTyped) {
             typed = next;

@@ -1,8 +1,11 @@
 package gdscript
 
+import com.intellij.history.core.Paths
 import com.intellij.openapi.util.IconLoader
 import com.intellij.util.IconUtil
+import java.io.File
 import javax.swing.Icon
+import javax.swing.ImageIcon
 
 object GdIcon {
     val FILE = IconLoader.getIcon("icons/file.png", GdIcon::class.java)
@@ -27,14 +30,27 @@ object GdIcon {
 
     private var editorIcons = HashMap<String, Icon>()
 
-    fun getEditorIcon(className: String): Icon {
+    fun getEditorIcon(className: String, extended: (() -> String)? = null): Icon {
+        if (className.isBlank()) return backupIcon()
+
         val icon = editorIcons[className]
         if (icon == null) {
             try {
-                var loaded = IconLoader.getIcon(
+                var loaded: Icon? = null
+                loaded = IconLoader.getIcon(
                     String.format("icons/godot_editor/%s.svg", className),
                     GdIcon::class.java
                 )
+                if (loaded.iconHeight <= 1) {
+                    loaded = IconLoader.getIcon("file://$className", GdIcon::class.java)
+                }
+                if (loaded.iconHeight <= 1 && extended != null) {
+                    loaded = IconLoader.getIcon(
+                        String.format("icons/godot_editor/%s.svg", extended()),
+                        GdIcon::class.java
+                    )
+                }
+
                 if (loaded.iconHeight > 1) {
                     loaded = IconUtil.toSize(loaded, 16, 16)
                     editorIcons[className] = loaded

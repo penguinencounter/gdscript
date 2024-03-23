@@ -1,5 +1,7 @@
 package tscn.toolWindow.model
 
+import gdscript.GdIcon
+import gdscript.index.impl.GdFileResIndex
 import gdscript.psi.utils.GdNodeUtil.relativeOrUniquePath
 import tscn.psi.TscnNodeHeader
 import javax.swing.tree.DefaultMutableTreeNode
@@ -19,7 +21,12 @@ class TscnSceneTreeNode : DefaultMutableTreeNode {
 
     constructor(node: TscnNodeHeader, basePath: String, externalType: String? = null) {
         myName = node.name
-        myType = externalType ?: node.type
+        myType = externalType ?: node.scriptResource.let {
+            GdFileResIndex.INSTANCE.getValue(it, node.project).let {
+                if (it?.icon?.isNotBlank() == true) it.icon
+                else null
+            }
+        } ?: node.type
         userObject = node.relativeOrUniquePath(basePath)
         hasScript = node.hasScript()
         hasUniqueName = node.isUniqueNameOwner
@@ -63,6 +70,8 @@ class TscnSceneTreeNode : DefaultMutableTreeNode {
             if (i >= 0) {
                 node.inherited = true
                 children[i] = node
+            } else {
+                children.add(node)
             }
             return
         }

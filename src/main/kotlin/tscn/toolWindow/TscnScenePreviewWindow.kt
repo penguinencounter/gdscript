@@ -127,9 +127,9 @@ class TscnScenePreviewWindow : Disposable {
                     RebuildDelay.QUEUE -> 100
                 }
             }
-                    .collectLatest {
-                        rebuildImpl()
-                    }
+                .collectLatest {
+                    rebuildImpl()
+                }
         }
     }
 
