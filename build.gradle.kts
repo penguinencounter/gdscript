@@ -29,7 +29,8 @@ sourceSets {
 
 intellij {
     version.set("2023.3")
-    //type.set("RD")
+    // version.set("2024.1-SNAPSHOT") // for Rider
+    // type.set("RD") // for Rider
     plugins.set(listOf("org.jetbrains.plugins.textmate"))
     updateSinceUntilBuild.set(true)
 }
