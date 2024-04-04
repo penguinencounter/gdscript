@@ -1,21 +1,16 @@
 package gdscript.utils
 
 import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.project.Project
-import com.intellij.platform.lsp.api.LspServerManager
-import com.intellij.platform.lsp.api.LspServerState
-import com.intellij.platform.lsp.api.LspServerSupportProvider
+import com.jetbrains.rider.godot.community.LspRunningStatusProvider
 
 class RiderGodotSupportPluginUtil {
     companion object {
-        private const val GODOT_LSP_PRESENTABLE_NAME = "Godot"
+        private val EP_NAME: ExtensionPointName<LspRunningStatusProvider> = ExtensionPointName.create("com.intellij.rider.godot.community.lspStatusProvider")
 
         fun isGodotSupportLSPRunning(project: Project): Boolean {
-            val manager = LspServerManager.getInstance(project)
-            val provider = LspServerSupportProvider.EP_NAME.findFirstSafe { provider ->
-                manager.getServersForProvider(provider::class.java).any { it.state == LspServerState.Running && it.descriptor.presentableName == GODOT_LSP_PRESENTABLE_NAME }
-            }
-            return provider != null
+            return EP_NAME.extensionList.any() { it.isLspRunning(project) } // list of booleans
         }
     }
 }
