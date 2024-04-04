@@ -8,7 +8,7 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import gdscript.psi.GdFile
 import gdscript.psi.utils.PsiGdFileUtil
-import gdscript.utils.isGodotSupportPluginForRiderInstalled
+import gdscript.utils.isRiderGodotSupportPluginInstalled
 import tscn.psi.TscnFile
 
 class GdRunConfigurationProducer : LazyRunConfigurationProducer<GdRunConfiguration>() {
@@ -18,7 +18,7 @@ class GdRunConfigurationProducer : LazyRunConfigurationProducer<GdRunConfigurati
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>,
     ): Boolean {
-        if (PluginManagerCore.isGodotSupportPluginForRiderInstalled())
+        if (PluginManagerCore.isRiderGodotSupportPluginInstalled())
             return false
 
         val psi = context.psiLocation ?: return false

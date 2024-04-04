@@ -1,6 +1,5 @@
 package gdscript.annotator
 
-import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
@@ -17,7 +16,6 @@ import gdscript.psi.utils.GdClassUtil
 import gdscript.psi.utils.PsiGdFileUtil
 import gdscript.utils.PsiFileUtil.isInSdk
 import gdscript.utils.StringUtil.snakeToPascalCase
-import gdscript.utils.isGodotSupportPluginForRiderInstalled
 
 /**
  * Checks for uniqueness of classes & existing inheritance
@@ -62,7 +60,7 @@ class GdClassNameAnnotator : Annotator {
             }
 
             holder
-                .newAnnotationGd(HighlightSeverity.ERROR, "Class not found")
+                .newAnnotationGd(element.project, HighlightSeverity.ERROR, "Class not found")
                 .range(element.textRange)
                 .create()
         }
@@ -108,7 +106,7 @@ class GdClassNameAnnotator : Annotator {
 
         if (conflict) {
             holder
-                .newAnnotationGd(HighlightSeverity.ERROR, message)
+                .newAnnotationGd(element.project, HighlightSeverity.ERROR, message)
                 .range(element.textRange)
                 .create()
             return true
@@ -124,7 +122,7 @@ class GdClassNameAnnotator : Annotator {
         val filename = PsiGdFileUtil.filename(element.containingFile).snakeToPascalCase()
         if (filename.lowercase() != name.lowercase()) {
             holder
-                .newAnnotationGd(HighlightSeverity.WEAK_WARNING, "Class name does not match filename")
+                .newAnnotationGd(element.project, HighlightSeverity.WEAK_WARNING, "Class name does not match filename")
                 .range(element.textRange)
                 .withFix(GdFileClassNameAction(filename, element))
                 .create()
@@ -136,7 +134,7 @@ class GdClassNameAnnotator : Annotator {
     private fun isDuplicated(element: PsiElement, holder: AnnotationHolder, type: String) {
         if (PsiTreeUtil.getPrevSiblingOfType(element, element::class.java) !== null) {
             holder
-                .newAnnotationGd(HighlightSeverity.ERROR, "$type already defined")
+                .newAnnotationGd(element.project, HighlightSeverity.ERROR, "$type already defined")
                 .range(element.textRange)
                 .withFix(GdRemoveElementsAction(element))
                 .create()
