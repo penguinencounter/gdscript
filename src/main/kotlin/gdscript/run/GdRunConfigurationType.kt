@@ -20,7 +20,7 @@ class GdRunConfigurationType : ConfigurationType {
 
     override fun getId(): String = ID
 
-    override fun getConfigurationFactories(): Array<ConfigurationFactory> =
-        arrayOf(GdConfigurationFactory)
-
+    override fun getConfigurationFactories(): Array<ConfigurationFactory> {
+        return arrayOf(GdConfigurationFactory)
+    }
 }
