@@ -8,12 +8,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import gdscript.action.quickFix.GdChangeTypeFix
 import gdscript.action.quickFix.GdRemoveElementsAction
 import gdscript.completion.utils.GdMethodCompletionUtil.shortMethodHeader
-import gdscript.psi.GdCallEx
-import gdscript.psi.GdClassNaming
-import gdscript.psi.GdFuncDeclEx
-import gdscript.psi.GdMethodDeclTl
-import gdscript.psi.GdRefIdNm
-import gdscript.psi.GdVarDeclSt
+import gdscript.psi.*
 import gdscript.psi.utils.GdClassMemberUtil
 import gdscript.psi.utils.GdClassMemberUtil.constructors
 import gdscript.psi.utils.GdExprUtil
@@ -23,7 +18,7 @@ import gdscript.utils.PsiElementUtil.nextNonWhiteCommentToken
 import gdscript.utils.PsiElementUtil.prevNonWhiteCommentToken
 import gdscript.utils.StringUtil.isDynamicType
 
-class GdParamAnnotator : Annotator {
+class GdCallExAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         if (element !is GdCallEx) return
